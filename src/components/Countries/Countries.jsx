@@ -1,9 +1,12 @@
-import React from "react";
+import React, { use } from "react";
 
-const Countries = () => {
+const Countries = ({ countryPromise }) => {
+  const countries = use(countryPromise);
+  console.log(countries);
+
   return (
-    <div>
-      <p>Countries</p>
+    <div className="card">
+      <h1>Countries</h1>
     </div>
   );
 };
