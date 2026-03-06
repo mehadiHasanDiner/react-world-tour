@@ -1,23 +1,54 @@
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Country from "../Country/Country";
 import "./Countries.css";
+import {
+  addIdToStoredCart,
+  getStoreCart,
+  removeFromCart,
+} from "../../utilities/localstorage";
+import Cart from "../Cart/Cart";
 
 const Countries = ({ countryPromise }) => {
   const countries = use(countryPromise);
   // console.log(countries);
 
   const [countriesVisited, setCountriesVisited] = useState([]);
-  const [visitedCountriesFlag, setVisitedCountriesFlag] = useState([]);
+  const [addToCart, setAddToCart] = useState([]);
 
   const handleCountriesVisited = (country) => {
     const newVisitedCountries = [...countriesVisited, country];
     setCountriesVisited(newVisitedCountries);
   };
 
-  const handleVisitedCountriesFlag = (visitedFlags) => {
-    const newVisitedFlags = [...visitedCountriesFlag, visitedFlags];
-    setVisitedCountriesFlag(newVisitedFlags);
-    console.log(newVisitedFlags);
+  // useEffect
+  useEffect(() => {
+    const storedCartIds = getStoreCart();
+    // console.log(storedCartIds, countries);
+
+    const storedCartCountries = [];
+
+    for (const id of storedCartIds) {
+      const cartCountry = countries.find((country) => country.cca3 === id);
+      if (cartCountry) {
+        storedCartCountries.push(cartCountry);
+      }
+    }
+    setAddToCart(storedCartCountries);
+  }, [countries]);
+
+  console.log(addToCart);
+
+  const handleAddToCart = (country) => {
+    const newCart = [...addToCart, country];
+    setAddToCart(newCart);
+    addIdToStoredCart(country.cca3);
+    console.log(newCart);
+  };
+
+  const handleRemoveFromCart = (id) => {
+    const remainingCart = addToCart.filter((cart) => cart.cca3 !== id);
+    setAddToCart(remainingCart);
+    removeFromCart(id);
   };
 
   return (
@@ -29,21 +60,21 @@ const Countries = ({ countryPromise }) => {
           <li>{visitCountry?.name?.common}</li>
         ))}
       </ol>
-      <div>
-        {visitedCountriesFlag.map((visitedFlag, index) => (
-          <img
-            key={index}
-            style={{ width: "100px" }}
-            src={visitedFlag}
-            alt=""
-          />
+      <p>Country added to the Cart: {addToCart.length}</p>
+      <div className="cart">
+        {addToCart.map((cart) => (
+          <Cart
+            cart={cart}
+            handleRemoveFromCart={handleRemoveFromCart}
+            key={cart.cca3}
+          ></Cart>
         ))}
       </div>
 
       <div className="countries">
         {countries.map((country) => (
           <Country
-            handleVisitedCountriesFlag={handleVisitedCountriesFlag}
+            handleAddToCart={handleAddToCart}
             handleCountriesVisited={handleCountriesVisited}
             key={country.cca3}
             country={country}
