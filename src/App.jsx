@@ -4,7 +4,7 @@ import Countries from "./components/Countries/Countries";
 
 function App() {
   const countryPromise = fetch(
-    "https://restcountries.com/v3.1/all?fields=name,flags",
+    "https://restcountries.com/v3.1/independent"
   ).then((res) => res.json());
 
   // const countriesData = countryPromise();

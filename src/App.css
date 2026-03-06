@@ -35,6 +35,7 @@
 .card {
   border-radius: 10px;
   border: 2px solid burlywood;
+  margin-top: 10px;
 }
 
 .read-the-docs {
